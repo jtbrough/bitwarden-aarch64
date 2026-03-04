@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 BITWARDEN_REPO="bitwarden/clients"
 APPIMAGETOOL_URL="https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-aarch64.AppImage"
 
@@ -156,14 +157,20 @@ main() {
   local api_url
   if [[ -n "$TAG" ]]; then
     api_url="https://api.github.com/repos/${BITWARDEN_REPO}/releases/tags/${TAG}"
+    log "Fetching release metadata"
+    curl_json "$api_url" > "$release_json"
   elif [[ -n "$VERSION" ]]; then
     api_url="https://api.github.com/repos/${BITWARDEN_REPO}/releases/tags/desktop-v${VERSION}"
+    log "Fetching release metadata"
+    curl_json "$api_url" > "$release_json"
   else
-    api_url="https://api.github.com/repos/${BITWARDEN_REPO}/releases/latest"
+    api_url="https://api.github.com/repos/${BITWARDEN_REPO}/releases?per_page=100"
+    log "Fetching latest Desktop release metadata"
+    local desktop_release_json
+    desktop_release_json="$(curl_json "$api_url" | jq -crf "$SCRIPT_DIR/select-desktop-release.jq")"
+    [[ -n "$desktop_release_json" ]] || die "Could not find a Desktop release"
+    printf '%s\n' "$desktop_release_json" > "$release_json"
   fi
-
-  log "Fetching release metadata"
-  curl_json "$api_url" > "$release_json"
 
   local release_tag
   release_tag="$(jq -r '.tag_name' "$release_json")"

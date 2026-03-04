@@ -1,0 +1,156 @@
+[
+  {
+    "name": "Web v2026.2.1",
+    "tag_name": "web-v2026.2.1",
+    "draft": false,
+    "prerelease": false,
+    "assets": [
+      {
+        "name": "web-2026.2.1-selfhosted-COMMERCIAL.zip"
+      },
+      {
+        "name": "web-2026.2.1-selfhosted-open-source.zip"
+      }
+    ]
+  },
+  {
+    "name": "Desktop v2026.1.1",
+    "tag_name": "desktop-v2026.1.1",
+    "draft": false,
+    "prerelease": false,
+    "assets": [
+      {
+        "name": "Bitwarden-2026.1.1-amd64.deb"
+      },
+      {
+        "name": "Bitwarden-2026.1.1-arm64-store.appx"
+      },
+      {
+        "name": "Bitwarden-2026.1.1-arm64.appx"
+      },
+      {
+        "name": "bitwarden-2026.1.1-arm64.nsis.7z"
+      },
+      {
+        "name": "Bitwarden-2026.1.1-ia32-store.appx"
+      },
+      {
+        "name": "Bitwarden-2026.1.1-ia32.appx"
+      },
+      {
+        "name": "bitwarden-2026.1.1-ia32.nsis.7z"
+      },
+      {
+        "name": "Bitwarden-2026.1.1-universal-mac.zip"
+      },
+      {
+        "name": "Bitwarden-2026.1.1-universal.dmg"
+      },
+      {
+        "name": "Bitwarden-2026.1.1-universal.dmg.blockmap"
+      },
+      {
+        "name": "Bitwarden-2026.1.1-universal.pkg.archive"
+      },
+      {
+        "name": "Bitwarden-2026.1.1-x64-store.appx"
+      },
+      {
+        "name": "Bitwarden-2026.1.1-x64.appx"
+      },
+      {
+        "name": "bitwarden-2026.1.1-x64.nsis.7z"
+      },
+      {
+        "name": "Bitwarden-2026.1.1-x86_64.AppImage"
+      },
+      {
+        "name": "Bitwarden-2026.1.1-x86_64.rpm"
+      },
+      {
+        "name": "Bitwarden-Installer-2026.1.1.exe"
+      },
+      {
+        "name": "Bitwarden-Portable-2026.1.1.exe"
+      },
+      {
+        "name": "bitwarden.2026.1.1.nupkg"
+      },
+      {
+        "name": "bitwarden_2026.1.1_amd64.snap"
+      },
+      {
+        "name": "bitwarden_2026.1.1_arm64.snap"
+      },
+      {
+        "name": "bitwarden_2026.1.1_arm64.tar.gz"
+      },
+      {
+        "name": "bitwarden_2026.1.1_x64.tar.gz"
+      },
+      {
+        "name": "latest-linux.yml"
+      },
+      {
+        "name": "latest-mac.yml"
+      },
+      {
+        "name": "latest.yml"
+      },
+      {
+        "name": "macos-build-number.json"
+      }
+    ]
+  },
+  {
+    "name": "Browser v2026.1.1",
+    "tag_name": "browser-v2026.1.1",
+    "draft": false,
+    "prerelease": false,
+    "assets": [
+      {
+        "name": "browser-source-2026.1.1.zip"
+      },
+      {
+        "name": "dist-chrome-2026.1.1.zip"
+      },
+      {
+        "name": "dist-edge-2026.1.1.zip"
+      },
+      {
+        "name": "dist-firefox-2026.1.1.zip"
+      },
+      {
+        "name": "dist-opera-2026.1.1.zip"
+      }
+    ]
+  },
+  {
+    "name": "Web v2026.2.0",
+    "tag_name": "web-v2026.2.0",
+    "draft": false,
+    "prerelease": false,
+    "assets": [
+      {
+        "name": "web-2026.2.0-selfhosted-COMMERCIAL.zip"
+      },
+      {
+        "name": "web-2026.2.0-selfhosted-open-source.zip"
+      }
+    ]
+  },
+  {
+    "name": "Web v2026.1.1",
+    "tag_name": "web-v2026.1.1",
+    "draft": false,
+    "prerelease": false,
+    "assets": [
+      {
+        "name": "web-2026.1.1-selfhosted-COMMERCIAL.zip"
+      },
+      {
+        "name": "web-2026.1.1-selfhosted-open-source.zip"
+      }
+    ]
+  }
+]

@@ -26,7 +26,11 @@ jobs:
       upstream_version: ${{ steps.check.outputs.upstream_version }}
       upstream_url: ${{ steps.check.outputs.upstream_url }}
       upstream_name: ${{ steps.check.outputs.upstream_name }}
+      upstream_found: ${{ steps.check.outputs.upstream_found }}
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
       - name: Resolve upstream release and check existing repo release
         id: check
         env:
@@ -66,21 +70,73 @@ jobs:
             return 1
           }
 
+          api_get_json_optional_404() {
+            local url="$1"
+            local attempts=6
+            local delay=2
+            local n
+            local response
+            local http_code
+            local body
+            for n in $(seq 1 "$attempts"); do
+              response="$(curl -sSL -w '\n%{http_code}' \
+                -H 'Accept: application/vnd.github+json' \
+                -H 'User-Agent: bitwarden-aarch64-actions' \
+                -H "Authorization: Bearer ${GH_TOKEN}" \
+                "$url" || true)"
+              http_code="${response##*$'\n'}"
+              body="${response%$'\n'*}"
+
+              if [[ "$http_code" == "200" ]]; then
+                printf '%s\n' "$body"
+                return 0
+              fi
+              if [[ "$http_code" == "404" ]]; then
+                return 0
+              fi
+              if [[ "$n" -lt "$attempts" ]]; then
+                echo "API request failed ($n/$attempts) with HTTP ${http_code}, retrying in ${delay}s: $url"
+                sleep "$delay"
+                delay=$((delay * 2))
+              fi
+            done
+            echo "Failed to query API after retries (last HTTP ${http_code}): $url" >&2
+            return 1
+          }
+
           if [[ -n "${INPUT_VERSION}" ]]; then
             TAG="desktop-v${INPUT_VERSION}"
             API_URL="https://api.github.com/repos/bitwarden/clients/releases/tags/${TAG}"
+            RELEASE_JSON="$(api_get_json_optional_404 "$API_URL")"
           else
-            API_URL="https://api.github.com/repos/bitwarden/clients/releases/latest"
+            API_URL="https://api.github.com/repos/bitwarden/clients/releases?per_page=100"
+            RELEASE_JSON="$(
+              api_get_json "$API_URL" | jq -crf scripts/select-desktop-release.jq
+            )"
           fi
 
-          RELEASE_JSON="$(api_get_json "$API_URL")"
+          if [[ -z "$RELEASE_JSON" ]]; then
+            if [[ -n "${INPUT_VERSION}" ]]; then
+              echo "No matching Desktop release tag was found for desktop-v${INPUT_VERSION}."
+            else
+              echo "No stable Desktop release with the expected AppImage asset was found."
+            fi
+            echo "should_build=false" >> "$GITHUB_OUTPUT"
+            echo "upstream_found=false" >> "$GITHUB_OUTPUT"
+            echo "upstream_tag=" >> "$GITHUB_OUTPUT"
+            echo "upstream_version=" >> "$GITHUB_OUTPUT"
+            echo "upstream_url=" >> "$GITHUB_OUTPUT"
+            echo "upstream_name=" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
           UPSTREAM_TAG="$(jq -r '.tag_name' <<< "$RELEASE_JSON")"
           UPSTREAM_URL="$(jq -r '.html_url' <<< "$RELEASE_JSON")"
           UPSTREAM_NAME="$(jq -r '.name' <<< "$RELEASE_JSON")"
-          VERSION="$(jq -r '.assets[] | select(.name | test("^Bitwarden-[0-9.]+-x86_64\\.AppImage$")) | .name' <<< "$RELEASE_JSON" | head -n1 | sed -E 's/^Bitwarden-([0-9.]+)-x86_64\.AppImage$/\1/')"
+          VERSION="${UPSTREAM_TAG#desktop-v}"
 
           [[ -n "$UPSTREAM_TAG" && "$UPSTREAM_TAG" != "null" ]] || { echo "Missing upstream tag"; exit 1; }
-          [[ -n "$VERSION" ]] || { echo "Could not parse version"; exit 1; }
+          [[ -n "$VERSION" && "$VERSION" != "$UPSTREAM_TAG" ]] || { echo "Could not parse version from upstream tag"; exit 1; }
 
           STATUS="$(curl -s -o /dev/null -w '%{http_code}' -H "Authorization: Bearer ${GH_TOKEN}" -H 'Accept: application/vnd.github+json' "https://api.github.com/repos/${REPO}/releases/tags/${UPSTREAM_TAG}")"
 
@@ -93,6 +149,7 @@ jobs:
           fi
 
           echo "should_build=${SHOULD_BUILD}" >> "$GITHUB_OUTPUT"
+          echo "upstream_found=true" >> "$GITHUB_OUTPUT"
           echo "upstream_tag=${UPSTREAM_TAG}" >> "$GITHUB_OUTPUT"
           echo "upstream_version=${VERSION}" >> "$GITHUB_OUTPUT"
           echo "upstream_url=${UPSTREAM_URL}" >> "$GITHUB_OUTPUT"
@@ -221,5 +278,9 @@ jobs:
     steps:
       - name: No new upstream release
         run: |
-          echo "No new upstream release to publish."
-          echo "Latest upstream tag: ${{ needs.check-upstream.outputs.upstream_tag }}"
+          if [[ "${{ needs.check-upstream.outputs.upstream_found }}" != "true" ]]; then
+            echo "No matching stable Desktop release with the expected AppImage asset was found."
+          else
+            echo "No new upstream release to publish."
+            echo "Latest upstream tag: ${{ needs.check-upstream.outputs.upstream_tag }}"
+          fi

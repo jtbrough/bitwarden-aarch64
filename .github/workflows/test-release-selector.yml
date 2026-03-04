@@ -1,0 +1,20 @@
+name: Test Release Selector
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  test-release-selector:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Run release selector regression test
+        run: |
+          set -euo pipefail
+          chmod +x tests/test_release_selector.sh
+          tests/test_release_selector.sh
