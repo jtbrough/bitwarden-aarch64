@@ -197,7 +197,7 @@ main() {
   download_file "$APPIMAGETOOL_URL" "$appimagetool"
   chmod +x "$appimagetool"
 
-  rm -rf "$build_dir/AppDir" "$build_dir/arm" "$build_dir/verify"
+  rm -rf "$build_dir/AppDir" "$build_dir/arm"
   mkdir -p "$build_dir/arm"
 
   local offset
@@ -220,11 +220,7 @@ main() {
 
   if [[ "$SKIP_VALIDATE" -eq 0 ]]; then
     log "Validating output"
-    file "$out_appimage" | grep -qi 'ARM aarch64' || die "Output is not ARM aarch64"
-    local out_offset
-    out_offset="$($out_appimage --appimage-offset)"
-    unsquashfs -no-xattrs -d "$build_dir/verify" -offset "$out_offset" "$out_appimage" >/dev/null
-    file "$build_dir/verify/bitwarden-app" | grep -qi 'ARM aarch64' || die "Embedded bitwarden-app is not ARM aarch64"
+    "$SCRIPT_DIR/verify-appimage.sh" "$out_appimage"
   fi
 
   local sha out_sha_file

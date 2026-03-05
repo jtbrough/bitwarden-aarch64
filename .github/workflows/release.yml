@@ -192,12 +192,8 @@ jobs:
         run: |
           set -euo pipefail
           APPIMAGE="${{ steps.meta.outputs.out_appimage }}"
-          test -f "$APPIMAGE"
-          chmod +x "$APPIMAGE"
-          file "$APPIMAGE" | grep -qi 'ARM aarch64'
-          VERSION_OUT="$("$APPIMAGE" --appimage-version)"
-          test -n "$VERSION_OUT"
-          echo "Runtime version output: $VERSION_OUT"
+          chmod +x scripts/verify-appimage.sh
+          scripts/verify-appimage.sh "$APPIMAGE"
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
