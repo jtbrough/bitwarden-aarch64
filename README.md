@@ -1,8 +1,8 @@
 # bitwarden-aarch64 (ARM64) for Linux
 
-This project exists because official Bitwarden Linux aarch64 support is currently incomplete for common Linux distribution channels.
+This project exists because official Bitwarden Linux aarch64 support is currently incomplete across common Linux distribution channels.
 
-As of February 22, 2026, Bitwarden does not provide a complete first-party Linux aarch64 delivery story across key channels such as Homebrew, Flatpak, Snap, and AppImage.
+While community-maintained aarch64 Flatpak packages are available on [Flathub](https://github.com/flathub/com.bitwarden.desktop) (added in [March 2026](https://github.com/flathub/com.bitwarden.desktop/commit/308)), Bitwarden does not provide a complete first-party Linux aarch64 delivery story across key channels such as Homebrew, Snap, `.deb`/`.rpm`, and AppImage.
 
 This repository publishes community-built Linux aarch64 AppImages for Bitwarden Desktop and will continue doing so until Bitwarden provides formal, first-party Linux on ARM support.
 
